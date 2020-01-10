@@ -64,30 +64,6 @@ export default {
             'speed': false,
         });
         })
-    // setTimeout(() => {
-    //     slidePage.init({
-    //         /*'index': 1,*/
-    //         before:function(index,direction,target){
-    //             if(direction=='next'){
-    //                 if(target==1){
-    //                     slidePage.fire(2)   //-- 手动控制播放第几页的lazy动画
-    //                 }
-    //                 // $('#pagination').find('a').removeClass('active').eq(index).addClass('active')
-    //             }else if(direction=='prev'){
-    //                 // $('#pagination').find('a').removeClass('active').eq(target-1).addClass('active')
-    //             }
-    //         },
-    //         after:function(index,direction,target){
-
-    //         },
-    //         'useAnimation': true,
-    //         'refresh': true,
-    //         'speed': false,
-    //     });
-    // }, 200)
-    // $('#pagination').find('a').eq(0).addClass('active')
-    
-
 
     },
     methods: {

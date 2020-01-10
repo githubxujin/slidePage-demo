@@ -91,11 +91,11 @@
             item.next().css(css)
         },
         'prevSlide': function(item) {
-            item.prev().css({'-webkit-transform': 'scale(1)','transform': 'scale(1)'});
+            item.prev().css({'-webkit-transform': 'translate3d(0px, 0px, 0px)','transform': 'translate3d(0px, 0px, 0px)'});
             item.css(translate('100%'))
         },
         'showSlide': function(item) {
-            item.css({'-webkit-transform': 'scale(1)','transform': 'scale(1)'});
+            item.css({'-webkit-transform': 'translate3d(0px, 0px, 0px)','transform': 'translate3d(0px, 0px, 0px)'});
             item.next().css(translate('100%'))
         }
     }
