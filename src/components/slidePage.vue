@@ -1,5 +1,12 @@
 <template>
+<div>
+    <div class="audio rotateOver">
+          <!-- <audio controls> -->
+              <!-- <source src="song2.ogg" type="audio/*"> -->
+          <!-- </audio> -->
+      </div>
   <div class="slidePage-container" id="slidePage-container">
+      
       <div class="item item1">
           <div>第一页</div>
           <div class="step step1 fadeIn hide"></div>
@@ -28,6 +35,7 @@
       <div class="item item6">
           <span>立即体验</span>
       </div>
+  </div>
   </div>
 </template>
 
@@ -74,6 +82,23 @@ export default {
 
 <style lang="scss" scoped>
 
+            
+        
+        .audio{
+            position: absolute;
+            
+            width: 20vw;
+            height: 20vw;
+            border-radius: 50%;
+            right: 5vw;
+            top: 5vw;
+            audio{
+                display: none;
+            }
+            background: url(../assets/zhoujielun.jpg) no-repeat;
+            background-size: 100% 100%; 
+            z-index: 10;
+        }
 
         html, body {
             margin: 0;

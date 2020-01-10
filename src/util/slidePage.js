@@ -85,7 +85,6 @@
     };
     var obj = {
         'nextSlide': function(item) {
-
             item.css({'transform':'translate3d(0px, -100%, 0px)','-webkit-transform':'translate3d(0px,-100%, 0px)'});
             var css = translate('0')
             item.next().css(css)
@@ -178,7 +177,7 @@
     function initDom(opt) {
         console.log(opt)
         //-- 这里在移动端下有个奇怪的问题：如果设置了speed参数，也就是当js设置了下面这个css属性，那么这个css动画的时间曲线会变成匀速过渡（linear）,所以speed只能默认为false暂时避免这问题。
-        //-- 如果有大神知道怎么解决请fork或联系我qq：296183464 谢谢。
+        //-- 如果有大神知道怎么解决请fork或联系我qq：498270108 谢谢。
         if (!!opt.speed){
             $(opt.pageContainer).css({'transition-duration':opt.speed+'ms','-webkit-transition-duration':opt.speed+'ms'});
         }
