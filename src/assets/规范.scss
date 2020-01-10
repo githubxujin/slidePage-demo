@@ -1,0 +1,519 @@
+@charset "utf-8";
+
+/* --------------------前端规范-----------------------
+
+引言
+老子《道德经》曰：道生一，一生二，二生三，三生万物。
+前端框架将带你从点、线、面、体去剖析前端中的道！
+点：html标签、css属性、js语法
+线：由HTML+css+js 开发的组件、模块
+面：由组件组合起来的页面
+体：由多个页面组合起来的网站系统
+
+-----------------------------------------------------
+
+响应式栅格系统
+为何要栅格？
+做网页就像盖楼，地皮有了，这一块干啥，那一块干啥，提前规划很重要，只有精确到像素才能让网页看上去更规范，更便于统一维护，扩展。同时保持网站的整体风格。
+栅格系统由行（row）和列（col）共同组成，通过不同的行列组合我们可以实现各种布局，内容就放在一个个的格子中，就像收纳盒一样。
+
+
+文档内容包含：通用规范、html规范、css规范、javascript规范和seo规范五个部分
+通用规范是所有前端代码必须遵守的基础规范
+Html规范适用于html和类html语言的文件
+Css规范适用于Cascading Style Sheet样式文件
+Javascript规范适用于javascript及类似的脚本文件
+SEO规范为贯穿在整个web中的规范
+
+-----------------------------------------------------
+
+Yslow规则
+1、Make fewer HTTP requests--更少的http请求，也就是说页面中尽量少的引用外部静态资源，js、css以及图片，能合并的css和js文件，要进行合并压缩
+2、Use a CDN--使用CDN网络，将页面中的静态资源分布到离用户最近的网络节点上
+3、Add an Expires header--为静态资源文件增加过期时间，让用户通过本地缓存来更快的访问网站
+4、Gzip components--压缩静态资源内容，减少网络传输时间
+5、Put CSS at the top--将CSS放在页面头部，能够更快渲染页面
+6、Put JS at the bottom--将JS放在页面底部，一般情况下JS的加载是阻塞模式的，放在页面顶部会阻塞其他资源的下载
+7、Avoid CSS expressions--不要使用CSS表达式，因为CSS表达式需要很多资源，有时甚至会造成页面假死
+8、Make JS and CSS external--将CSS和JS使用外部的独立文件，这点有点和1冲突，但是满足结构逻辑和表现分离的原则
+9、Reduce DNS lookups--减少DNS查找
+10、Minify JS--最小化压缩JS，和第4点不同，使用YUI Compressor或者JSMin将JS文件进行分析，将一些变量名变短，去除不必要的空格和符号
+11、Avoid redirects--避免无意义的重定向跳转
+12、Remove duplicate scripts--去除重复的脚本，不光是文件，甚至是同功能的函数
+13、Configure ETags--配置过期标签expired tags
+
+
+Yslow计算公式
+F = 8×{100-[4×(JS文件数-3)+4×(CSS文件数-2)+3×(CSS背景图连接数-6) ] }
+    +6×(100-10×未使用CDN的连接个数)
+    +10×[100-11×(Expire时间小于172800秒的连接个数) ]
+    +8×[100-11×(文件大小大于500字节且 未使用gzip的连接个数)]
+    +4×[body中没有CSS连接 ? 100∶ (99-10×body中的CSS连接数) ]
+    +4×(100-5×head中的JavaScript连接数)
+    +3×[不存在CSS表达式 ?100: (90-2×CSS表达式数目) ]
+    +3×[100-5×(域名数-4)]
+    +4×(100-10×未精简的CSS与JS个数)
+    +4×(100-10×Redirect个数)
+    +4×[100-5×(重复的JavaScript个数+重复的CSS个数) ]
+    +2×(100-11×未使用Etag的连接个数)
+    +4×(100-5×未缓存或者缓存时间不足3600秒的AJAX请求个数)
+    +3×(100-5×请求方式不是GET的AJAX个数)
+    +3×{DOM元素数量<MaxDOM ?100∶ [99-10×⌈((DOM元素数量-900))/250⌉ ] }
+    +4×(100-5×状态为404的连接个数)
+    +3×[cookie大小不超过1000字节 ?100∶ (99-10×⌊页面cookie的大小/1000⌋ ) ]
+    +3×(100-5×不满足cookie free要求的链接个数)
+    +4×[100-(2×使用hack的filter个数+5×未使用hack的filter个数) ]
+    +3×(100-5×在HTML代码中设定width和height的图片数)
+    +2×[100-(favicon不可缓存或缓存时间小于3600秒 ? 5∶0)-(favicon大小超过2000字节? 5∶0)]
+Score = F / 89
+
+----------------------------------------------------------------
+
+关于ie6
+核心思想：不要为了一个即将被淘汰的浏览器而浪费掉大部分开发时间
+即在保证开发效益和功能性需求的前提下，可以适当的牺牲ie6下的视觉效果。Ie6本身就行需要设计师和前端一起考虑的浏览器，当遇到实在无法兼容，或者兼容需要付出很大成本的时候，考虑让设计师后退一步
+
+浏览器市场份额参见：http://tongji.baidu.com/data/browser/
+保证大部分浏览器即可
+
+
+------------------------------------------------------------
+
+Html规范
+页面内容相关
+
+
+结构性元素
+p           表示段落. 只能包含内联元素, 不能包含块级元素;
+div         本身无特殊含义, 可用于布局. 几乎可以包含任何元素;
+br          表示换行符;
+hr          表示水平分割线;
+h1-h6       表示标题. 其中 h1 用于表示当前页面最重要的内容的标题;
+blockquote  表示引用, 可以包含多个段落. 请勿纯粹为了缩进而使用 blockquote, 大部分浏览器默认将 blockquote 渲染为带有左右缩进;
+pre         表示一段格式化好的文本;
+
+头部元素
+title      每个页面必须有且仅有一个 title 元素
+base       可用场景：首页、频道等大部分链接都为新窗口打开的页面
+link       link 用于引入 css 资源时，可省去 media(默认为all) 和 type(默认为text/css) 属性
+style      type 默认为 text/css， 可以省去
+script     type 属性可以省去， 不赞成使用lang属性，不要使用古老的<!– //–>这种hack脚本， 它用于阻止第一代浏览器(Netscape 1和Mosaic)将脚本显示成文字
+noscript   在用户代理不支持 JavaScript 的情况下提供说明
+
+文本元素
+a            a 存在 href 属性时表示链接，无 href 属性但有 name 属性表示锚点，a标签一定要加title
+em,strong    em 表示句意强调，加与不加会引起语义变化，可用于表示不同的心情或语调；strong 表示重要性强调，可用于局部或全局，strong强调的是重要性，不会改变句意
+abbr         表示缩写
+sub,sup      主要用于数学和化学公式，sup还可用于脚注
+span         本身无特殊含义
+ins,del      分别表示从文档中增加(插入)和删除
+
+媒体元素
+img         请勿将img元素作为定位布局的工具，不要用他显示空白图片；必要时给img元素增加alt属性
+object      可以用来插入Flash
+
+列表元素
+dl      表示关联列表，dd是对dt的解释；dt和dd的对应关系比较随意：一个dt对应多个dd、多个dt对应一个dd、多个dt对应多个dd， 都合法；可用于名词/单词解释、日程列表、站点目录
+ul      表示无序列表
+ol      表示有序列表, 可用于排行榜等
+li      表示列表项, 必须是ul/ol的子元素;
+
+表单元素
+推荐使用 button 代替 input，但必须声明 type
+推荐使用 fieldset，legend 组织表单
+表单元素的 name 不能设定为 action， enctype， method， novalidate， target， submit 会导致表单提交混乱
+
+
+图片相关
+1、  选择合适的格式，jpg保存照片和颜色丰富图片，GIF保存动画，其他所有图片用png24|8。
+2、  避免使用AlphaImageLoder
+3、  使用并且优化css sprite
+4、  （推荐）使用模块化的css sprite
+5、  不要在HTML中对图像进行缩放
+6、  （推荐）背景图片分布规则以10px或50px的倍数为准(注:非间距)
+7、  添加favicons 图标
+8、  img标签必须使用alt，尽量使用title
+
+----------------------------------------------------------------
+
+1、推荐使用html5的文档声明
+<!DOCTYPE HTML>
+
+2、必须申明文档的编码charset，且与文件本身编码保持一致，推荐使用UTF-8编码
+<meta charset="utf-8">
+
+3、title 不可缺少，控制在25个字、50个字节以内。“二级栏目 - 一级栏目 - 网站名称”。
+
+4、keywords很重要，关键词，针对SEO。
+注意： 5个左右,单个8汉字以内；禁忌堆砌，与网站主题无关。
+
+5、description网站描述，字数尽量空制在80个汉字，160个字符以内
+
+6、响应式采用栅格化处理，常用980栅格，1000栅格
+
+7、书写注释，方便程序开发嵌套。注释方式：
+开始注释：<!-- 注释 -->
+结束注释：<!-- /注释文案 -->
+允许只有开始注释
+注意： 浮动的地方不要加注释，可能导致布局错位或文字的BUG。
+
+8、img添加alt属性，增加可访问性。
+<img src="" alt="图片描述">
+
+9、带有实体名称的 ASCII 实体或特殊字符要使用实体名。
+注意： 实体名称对大小写敏感。
+
+10、标签一定要正确嵌套，标签一定要闭合。
+
+11、用div等标签布局；表格型数据，table首选。
+
+12、代码风格采用树形结构，提高可读性；避免冗余嵌套。
+
+13、模块之间必须保持独立，区块化布局，方便随意增删改，多人协作维护。
+
+14、对超过10行的页面模块进行注释, 以降低开发人员的嵌套成本和后期的维护成本
+
+15、多使用语义化标签
+
+----------------------------------------------
+
+html命名规范：
+  default/index.html    首页
+  404.html              404错误页
+  print.html            打印页
+  header.html           页头
+  footer.html           页脚
+  sitemap.html          网站地图
+  passport.html         通行证
+  rank.html             排行榜
+  roll.html             滚动新闻
+  solution.html         解决方案
+  joinus.html           加入我们
+  partner.html          合作伙伴
+  service.html          服务
+  aboutus.html          关于我们
+  contact.html          联系我们
+  company.html          公司介绍
+  organization.html     组织结构
+  culture.html          企业文化
+  strategy.html         发展策略
+  honor.html            公司荣誉
+  aptitudes.html        企业资质
+  events.html           大事记
+  business.html         商务合作
+  contract.html         服务条款
+  privacy.html          隐私声明
+  CSR.html              企业社会责任
+  news-开头.html         新闻相关
+  article-开头.html      资讯相关
+  picture-开头.html      图片相关
+  photo-开头.html        相册相关
+  product-开头.html      产品相关
+  goods-开头.html        商品相关
+  system-开头.html       系统相关
+  tag-开头.html          tag相关
+  brand-开头.html        品牌相关
+  help-开头.html         帮助相关
+  member-开头.html       会员相关
+  search-开头.html       搜索相关
+
+  -----------------------------------------------------------------
+
+
+CSS写作注意事项：
+  1. 页面编码规范
+    1.1. 统一使用 UTF-8 编码,用@charset "utf-8"指定页面编码。
+    1.2. 全局字体设置：
+         windows 7系统：微软雅黑 Arial；
+         windows XP及以下：新宋体，宋体，Arial
+         MAC默认字体：Helvetica Neue和Helvetica Hiragino Sans GB。
+    1.3. 中文字体使用编码转换
+  2. 属性写在一行内，属性之间、属性名和值之间以及属性与“{}”之间应减少空格，例如：.class{width:200px;height:100px;}
+  3. 属性的书写顺序：
+    3.1. 按照元素模型由外及内，由整体到细节书写，大致分为五组：
+      位置：position,left,right,float
+      盒模型属性：display,margin,padding,width,height
+      边框与背景：border,background
+      段落与文本：line-height,text-indent,font,color,text-decoration,...
+      其他属性：overflow,cursor,visibility,...
+    3.2. 针对特殊浏览器的属性，应写在标准属性之前，例如：-webkit-box-shadow:;-moz-box-shadow:;box-shaow:;
+  4. 带有前缀的属性，单独一行，通过缩进，让每个属性的值垂直对齐，方便编辑维护。
+  5. 谨慎添加新的选择符规则，尤其不可滥用 id，尽可能继承和复用已有样式
+  6. 选择符、属性、值均用小写（格式的颜色值除外）
+  7. 尽量避免使用各种 CSS Hack
+  8. 勿使用冗余低效的 CSS 写法，例如：ul li a span{... }
+  9. 慎用 !important
+  10. 建议使用具有语义化的classname或id
+  11.避免使用兼容性不好的滤镜 
+  12.开发过程中的未定事项，须用 [!] 标出，以便于后续讨论整理。
+  13.注释格式，统一使用双斜杠加*。
+  14.上下模块之间的间距统一使用下一个模块的margin-top来实现，好处是：如果没有下一个模块也不会多出一段空隙。
+  15.hover，selected，disabled，current等具有特定意义的请勿直接占用。
+  16.:link :visited :hover :active书写顺序 L-V-H-A，速记：LoVe（喜欢）HAte（讨厌）。
+  17.不要使用 @import
+
+------------------------------------------------------------------
+
+中文字体css编码转换
+  微软雅黑   \5FAE\8F6F\96C5\9ED1  或 Microsoft YaHei
+  黑体       \9ED1\4F53
+  新宋体     \65b0\5b8b\4f53
+  宋体       \5b8b\4f53
+
+------------------------------------------------------------------
+
+Hack规则
+核心思想：由于浏览器大战和浏览器更新带来的种种不确定因素，能不用hack就不用hack，只在hack的确可以很大的提高工作效益的时候，才使用hack
+  1. _          IE6
+  2. *          IE6/7
+  3. !important IE7/Firefox
+  4. *+         IE7
+  5. \9         IE6/7/8
+  6. \0         IE8
+  7. 条件hack
+      <!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7"><![endif]--> IE7以下版本
+      <!--[if IE 7]><html class="no-js lt-ie9 lt-ie8"><![endif]--> IE7
+      <!--[if IE 8]> <html class="no-js lt-ie9"><![endif]--> IE8
+      <!--[if gt IE 8]><!--><html class="no-js"><!--<![endif]--> IE8以上
+
+---------------------------------------------------------------------
+
+风格
+1、  禁止使用@import
+2、  禁止在html标签内直接写style=””（结构与表现分离）
+3、  尽量不要使用内联样式，如果一定要用，请确认写在head标签的style里面
+4、  可以写在一个样式里面的不要分开来写，如：background: url(example.jpg) 1px 20px no-repeat #fefefe;
+5、  缩进：
+a)  ‘:’和‘,’后面‘{’前面，请紧跟一个空白
+b)   多个选择器时，请分行书写
+.classa,
+.classb {
+    display: none;
+}
+C)   缩进使用4个空格
+6、  避免使用不必要的层级选择器，如：
+.classa #id {}
+
+--------------------------------------------------------------------
+
+Css规范
+命名规范
+1、  样式类名全部用小写，首字符必须是字母，禁止数字或其他特殊字符。由以字母开头的小写字母（a-z）、数字（0-9）、下划线（_）、短横杠（-）组成
+
+2、  可以是单个单词，也可以是组合单词，要求能够描述清楚模块和元素的含义，使其具有语义化。避免使用 123456…red,blue,left,right之类的（如颜色、字号大小等）矢量命名，如class="left_news"、class="2" ，以避免当状态改变时名称失去意义。尽量用单个单词简单描述class名称
+
+3、  双单词或多单词组合方式：形容词_名词、命名空间_名次、命名空间_形容词_名词。例如：news_list、mod_feeds、mod_my_feeds、cell_title
+
+4、  用于javascript的hook，请使用J_开头
+
+5、  常用的单词作为类名，要加上前缀；如：sidebar_current
+
+6、  css命名中英文对照
+
+通用命名
+1、页面框架命名，一般具有唯一性，推荐用ID命名
+ID名称    命名  
+头部  header  
+主体  main
+脚部  footer  
+容器  wrapper
+侧栏  side_bar    
+栏目  column
+布局  layout       
+2、模块结构命名
+CLASS名称 命名
+模块(如：新闻模块)  mod (mod_news)  
+标题栏 title
+内容  content 
+次级内容    sub_content
+
+3、导航结构命名
+CLASS名称 命名
+导航  nav
+主导航 main_nav
+子导航 sub_nav 
+顶部导航    top_nav
+菜单  menu    
+子菜单 sub_menu
+
+4、小元件命名及一般元素命名 
+CLASS名称 命名  
+二级  sub 
+面包屑 breadcrumb
+标志  logo
+广告  glod| jewelry …(禁用banner或ad)
+登陆  login   
+注册  register/reg
+搜索  search  
+加入  join
+状态  status  
+按钮  btn
+滚动  scroll  
+标签页 tab
+文章列表    list    
+短消息 msg/message
+当前的 current 
+提示小技巧   tips
+图标  icon
+注释  note
+指南  guide   
+服务  service
+热点  hot 
+新闻  news
+下载  download    
+投票  vote
+合作伙伴    partner 
+友情链接    link
+版权  copyright   
+演示  demo
+下拉框 select  
+摘要  summary
+翻页  pages   
+主题风格    themes
+设置  set 
+成功  suc
+按钮  btn 
+文本  txt
+颜色  color/c 
+背景  bg
+边框  border/bor  
+居中  center
+上   top/t   
+下   bottom/b
+左   left/l
+右   right/r
+添加  add
+删除  del
+间隔  sp  
+段落  p
+弹出层 pop 
+公共  global/gb
+操作  op  
+密码  pwd
+透明  tran    
+信息  info
+重点  hit 
+预览  pvw
+单行输入框   input   
+首页  index
+日志  blog    
+相册  photo
+留言板 guestbook   
+用户  user
+确认  confirm 
+取消  cancel
+报错  error        
+
+5、全局皮肤样式
+文字颜色(命名空间text_xxx)
+text_c1, text_c2,text_c3……
+背景颜色(命名空间bg _xxx)
+bg_c1,bg_c2,bg_c3……
+边框颜色(命名空间border_xxx)
+border_c1,border_c2,border_c3……
+
+  其它常用命名
+  current 当前    hover 悬停    selected 挑选   disabled 禁用   focus 得到焦点    blur 失去焦点   checked 勾选    success 成功    error 出错
+
+  header(hd) 头部   content(cnt) 内容   title(tit) 标题   item 项目（条）    cell 单元   image/pic(img) 图片   text(txt) 文字    top 顶部    scrubber 时序菜单
+
+  nav 导航    mainNav 主导航   subNav 子导航    topNav 顶部导航   breadcrumb 面包屑导航
+
+  flink 友情链接    footer 尾    copyright 版权
+
+  menu 菜单   submenu 子菜单   dropdown 下拉菜单
+
+  searchBar 搜索条   search 搜索条    searchTxt 搜索框   searchBtn 搜索按钮    search_key 搜索词
+
+  member 会员   ucenter 用户中心    loginBar 登陆条    login 登录    loginBtn 登录按钮   regsiter 注册按钮   btn-regsiter注册按钮    name 用户名    password 密码   nickname 昵称   mobilephone/mobile 手机    telephone/tel 电话   defaultavatar 默认头像
+
+  hot 热点    news 新闻   banner/AD 广告    download 下载
+
+  content 内容    title 标题    summary 摘要    time 时间
+
+  share 分享    digg 顶    like 喜欢
+
+  list/-list 列表   pList 图片列表    tList 文字列表    tpList 图文列表
+
+  table 表格    row 行   column 列    gutter 间隔   viewport 视口
+
+  tab 标签    tags 标签   scroll 滚动 
+
+  sidebar 侧边栏   column 栏目   section 区块    msg 提示信息    status 状态   vote 投票   tips 小技巧    guild 指南    note 注释
+
+  icon- 图标    btn- 按钮
+
+  goods 商品    goods-list 商品列表    goods-detail 商品详情    goods-info 商品信息
+
+  tuan 团购   tuan-list 团购列表   tuan-detail  团购详情    tuan-info 团购信息
+
+  transition 动画   shadow 阴影   fade 淡入淡出   flip 翻页效    slide 滑动    slideup 上滑动   slidedown 下滑动   turn 翻页   horizontal 水平   vertical 垂直   collapsible 折叠    corners 拐角    flow 流    reverse 反向    pop 弹窗
+
+  count 总数/计数   plus 加号/正   minus 减号/负    controlgroup 控制组
+
+  ------------------------------------------------------------------
+
+
+
+SEO规范
+必须做
+<head></head>部分
+网站的标题（title）
+（1）不要堆砌太多关键字
+（2）标题不宜过长，控制在30个中文
+（3）长尾关键词的融合
+例：
+<title> - 第三方网上在线支付平台</title>
+<title>手机充值 – </title>
+
+描述（description）
+（1）网站描述的写法
+网站描述相当于对整个网站的一个概括，应当真实概括，从用户体验的角度考虑，做到百度快照返回的结果和网站的实际性质一致。
+（2）网站描述的字数控制
+网站描述字数应当遵循快照原则，从用户体验角度出发考虑问题，细致下来，控制在120-140个字符之内，汉字60-70个。
+（3）网站栏目及内页描述的优化
+网站的重点栏目和内页的描述根据需要编写，需要注意的是无论是主页、栏目、还是内页都应该符合网页的实际性质。
+例：
+<meta name="description" content=”是国内领先的独立第三方支付平台，由盛大集团创办，致力于为互联网用户和商户提供“安全、便捷、稳定”的网上支付服务” />
+<meta name="description" content=”生活好助手是为用户开通的生活便捷服务，解决用户各种缴费问题。” />
+
+关键词（keywords）
+（1）网站关键词的个数
+网站关键词的个数的定位在百度“seo建议”里有着一种暗示，暗示我们把主要栏目的导航做成关键词。从栏目导航来说栏目可多可少，个人建议主页关键词个数控制在7个以内，如果您确实有过多的关键词，建议从栏目写关键词标签。
+（2）网站关键词的分隔符号
+网站关键词的分隔符号通用的为英文半角符号“,” 。
+（3）网站栏目及内页关键词优化
+上面已经提到，如果您关键词过多，把关键词标签布置在重点的栏目页或者内页。
+例：
+<meta name="keywords" content=”, 手机充值, 付款/汇款,盛大钱包” />
+<meta name="keywords" content=”手机充值,信用卡还款,购买彩票,电影票购买,收款/汇款/还款” />
+
+<body></body>部分
+H1标签
+H1标签在一张页面只能出现一个，且点明该页功能
+
+建议做
+链接优化
+合理的链接原则：
+采用纯文本链接，最好是别用Flash动画链接
+最好别使用图片热点链接
+为网站制作一个“网站地图”
+降低网页噪单，代码的精炼优化
+网页文件的大小最好不要超过200k（待定） 市场活动300k（待定）
+URL链接参数最好不宜过多
+文件URL深度不宜过深，建议4级（内部交叉链接，面包屑导航sitemap）
+配置404页面
+最后好sitemap更新通知各大搜索引擎
+拟定关键词时候考虑关键词的成本
+
+
+禁止做
+链接数量页面最多不允许超过100个链接
+关键词堆砌
+网页标题频繁更改
+网站主题与内容不符
+a)  代码过长而混乱
+b)  内链策略：避免单层次的自上而下的链接结构，应该是网状的链接结构
+c)  不能出现坏死链接
+
+---------------------------------- */

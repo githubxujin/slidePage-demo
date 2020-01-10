@@ -1,4 +1,36 @@
+/**
+使用scss宏减少代码量
 
+@mixin keyframes($animationName) {
+    @-webkit-keyframes #{$animationName} {
+        @content;
+    }
+    @-moz-keyframes #{$animationName} {
+        @content;
+    }
+    @-o-keyframes #{$animationName} {
+        @content;
+    }
+    @keyframes #{$animationName} {
+        @content;
+    }
+}
+
+@include keyframes(move) {
+    0%   { 
+        margin-left: 100px;
+    }
+    100% { 
+        margin-left: 400px;
+    }
+}
+
+animation: move 7s linear;
+-moz-animation: move 7s linear;
+-webkit-animation: move 7s linear;
+-o-animation: move 7s linear;
+
+*/
 .step.infinite {
     -webkit-animation-iteration-count: infinite;
     animation-iteration-count: infinite;
