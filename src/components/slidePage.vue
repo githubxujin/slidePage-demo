@@ -1,6 +1,6 @@
 <template>
 <div>
-    <div class="audio rotateOver">
+    <div class="audio rotateOver" :class="{'rotate-pause':!playing}" @click="change">
           <!-- <audio controls> -->
               <!-- <source src="song2.ogg" type="audio/*"> -->
           <!-- </audio> -->
@@ -45,7 +45,7 @@ require('@/util/slidePage-touch.js')
 export default {
     data() {
         return {
-
+            playing: true
         }
     },
     mounted() {
@@ -75,7 +75,10 @@ export default {
 
     },
     methods: {
-
+        change(e) {
+            console.log(e)
+            this.playing = !this.playing;
+        }
     }
 }
 </script>
@@ -83,7 +86,10 @@ export default {
 <style lang="scss" scoped>
 // @import '';
             
-        
+        .rotate-pause {
+            animation-play-state:paused;
+            -webkit-animation-play-state:paused; /* Safari 和 Chrome */
+        }
         .audio{
             position: absolute;
             
