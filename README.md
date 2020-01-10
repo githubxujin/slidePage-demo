@@ -2,6 +2,12 @@
 
 > A Vue.js project
 
+``` bash
+
+# 1. 采用fullpage.js发现性能有点问题，也难怪许久未更新，jq还是1.7版本
+
+# 2. 采用slidepage.js发现性能好很多，但是存在翻页时动画结束末段卡顿情况
+
 ## Build Setup
 
 ``` bash
