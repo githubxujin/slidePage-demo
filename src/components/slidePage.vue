@@ -1,9 +1,10 @@
 <template>
 <div>
-    <div class="audio rotateOver" :class="{'rotate-pause':!playing}" @click="change">
+    <div ref="container" class="audio" @click="change">
           <!-- <audio controls> -->
               <!-- <source src="song2.ogg" type="audio/*"> -->
           <!-- </audio> -->
+          <img ref="img" src="../assets/zhoujielun.jpg" alt="">
       </div>
   <div class="slidePage-container" id="slidePage-container">
       
@@ -78,14 +79,42 @@ export default {
         change(e) {
             console.log(e)
             this.playing = !this.playing;
-        }
+            let image = this.$refs.img;
+            let container = this.$refs.container;
+            
+            function pause() {
+                // isPlaying = false;
+                var iTransform = getComputedStyle(image).transform;
+                var cTransform = getComputedStyle(container).transform;
+                container.style.transform = cTransform === 'none'
+                    ? iTransform
+                    : iTransform.concat(' ', cTransform);
+                image.classList.remove('animate');
+            }
+
+            function play() {
+                // isPlaying = true;
+                image.classList.add('animate');
+            }
+            !this.playing ? play() : pause();
+        },
+        
     }
 }
 </script>
 
 <style lang="scss" scoped>
 // @import '';
-            
+        // IOS不支持animation-play-state
+        .animate {
+            animation: round 10s linear infinite;
+        }
+
+        @keyframes round {
+            100% {
+                transform: rotate(1turn);
+            }
+        }
         .rotate-pause {
             animation-play-state:paused;
             -webkit-animation-play-state:paused; /* Safari 和 Chrome */
@@ -101,9 +130,14 @@ export default {
             audio{
                 display: none;
             }
-            background: url(../assets/zhoujielun.jpg) no-repeat;
+            // background: url(../assets/zhoujielun.jpg) no-repeat;
             background-size: 100% 100%; 
             z-index: 10;
+            img{
+                width: 20vw;
+                height: 20vw;
+                border-radius: 50%;
+            }
         }
 
         html, body {
