@@ -77,6 +77,9 @@
         'fire':function(index){
             fireAnimate(index)
         },
+        'fireNow':function(index){
+            fireAnimateNow(index)
+        },
 
         canNext:true,
         canPrev:true,
@@ -208,8 +211,21 @@
     }
     //-- 手动触发动画
     function fireAnimate(index) {
+        console.log("手动触发动画", index)
         var item = $(opt.pageContainer).eq(index - 1);
         var lazy = item.find('.lazy')
+        lazy.each(function(i,item) {
+            var time = $(item).attr('data-delay') || 100;
+            setTimeout(function() {
+                $(item).removeClass('hide')
+            }, time)
+        })
+    }
+    //-- 手动触发动画不带延迟
+    function fireAnimateNow(index) {
+        console.log("手动触发动画", index)
+        var item = $(opt.pageContainer).eq(index - 1);
+        var lazy = item.find('.step')
         lazy.each(function(i,item) {
             var time = $(item).attr('data-delay') || 100;
             setTimeout(function() {

@@ -1,10 +1,13 @@
 <template>
 <div>
-    <div ref="container" class="audio" @click="change">
+    <div class="begin-page" ref="start">
+        <button @touchstart="start">开始</button>
+    </div>
+    <div ref="container" class="audio" @touchstart="change">
           <!-- <audio controls> -->
               <!-- <source src="song2.ogg" type="audio/*"> -->
           <!-- </audio> -->
-          <img ref="img" src="../assets/zhoujielun.jpg" alt="">
+          <img ref="img" class="animate" src="../assets/zhoujielun.jpg" alt="">
       </div>
   <div class="slidePage-container" id="slidePage-container">
       
@@ -52,30 +55,44 @@ export default {
     mounted() {
         import ('@/util/slidePage.js').then(_ => {
             slidePage.init({
-            /*'index': 1,*/
-            before:function(index,direction,target){
-                console.log('before',{index: index,direction:direction,target:target})
-                if(direction=='next'){
-                    if(target==1){
-                        slidePage.fire(2)   //-- 手动控制播放第几页的lazy动画
+            // 'index': 0,
+                before:function(index,direction,target){
+                    console.log('before',{index: index,direction:direction,target:target})
+                    if(direction=='next'){
+                        if(target==1){
+                            slidePage.fire(2)   //-- 手动控制播放第几页的lazy动画
+                        }
+                        // $('.item' + index + ' .step').addClass('fadeIn')
+                        // $('#pagination').find('a').removeClass('active').eq(index).addClass('active')
+                    }else if(direction=='prev'){
+                        // $('#pagination').find('a').removeClass('active').eq(target-1).addClass('active')
                     }
-                    // $('.item' + index + ' .step').addClass('fadeIn')
-                    // $('#pagination').find('a').removeClass('active').eq(index).addClass('active')
-                }else if(direction=='prev'){
-                    // $('#pagination').find('a').removeClass('active').eq(target-1).addClass('active')
-                }
-            },
-            after:function(index,direction,target){
-                console.log('after',{index: index,direction:direction,target:target})
-            },
-            'useAnimation': true,
-            'refresh': true,
-            'speed': false,
-        });
+                },
+                after:function(index,direction,target){
+                    console.log('after',{index: index,direction:direction,target:target})
+                },
+                'useAnimation': true,
+                'refresh': true,
+                'speed': false,
+            });
+            setTimeout(_ => {
+                // 默认进入首页，动画页动画都关闭
+                $('.item1').find('.step').addClass('hide')
+            }, 100)
+            
         })
 
     },
     methods: {
+        start(){
+            let start = this.$refs.start;
+            start.classList.add('opacityAnimation');
+            // 监听动画结束
+            start.addEventListener('webkitAnimationEnd', function() {
+                start.classList.add('displayNone');
+                slidePage.fireNow(1)
+            })
+        },
         change(e) {
             console.log(e)
             this.playing = !this.playing;
@@ -96,7 +113,7 @@ export default {
                 // isPlaying = true;
                 image.classList.add('animate');
             }
-            !this.playing ? play() : pause();
+            this.playing ? play() : pause();
         },
         
     }
@@ -106,6 +123,24 @@ export default {
 <style lang="scss" scoped>
 // @import '';
         // IOS不支持animation-play-state
+        .begin-page{
+            position: absolute;
+            height: 100vh;
+            width: 100%;
+            z-index: 11;
+            background: grey;
+        }
+        .displayNone {
+            display: none;
+        }
+        .opacityAnimation{
+            animation: opacityAnimation .5s linear;
+        }
+        @keyframes opacityAnimation {
+            100% {
+                opacity: 0;
+            }
+        }  
         .animate {
             animation: round 10s linear infinite;
         }
