@@ -3,11 +3,15 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-
+import vconsole from 'vconsole'
 Vue.config.productionTip = false
 require('@/util/jquery.fullPage.css')
 require('@/util/slidePage.css')
 require('@/util/page-animation.css')
+
+let isPrd = process.env.NODE_ENV === 'production';
+// !isPrd && new vconsole()
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

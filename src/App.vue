@@ -7,12 +7,19 @@
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  mounted() {
+    console.log(window.devicePixelRatio)
+  }
 }
 </script>
 
 <style>
 body{
+  padding: 0;
+  margin: 0;
+}
+*{
   padding: 0;
   margin: 0;
 }
