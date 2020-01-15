@@ -27,7 +27,19 @@
         <div class="lazy step1 slideUp hide"></div>
         <div class="lazy step2 slideDown hide"></div>
       </div>
-      <div class="item item4"></div>
+      <div class="item item4">
+          <div class="container">
+				<h2>Page2 - 单屏内容滚动</h2>
+				<p>当内容长度超过屏幕<br>会自动变成原生滚动条方式</p>
+				<ul>
+						<li>滚动内容 - 第1条</li>
+						<li>滚动内容 - 第2条</li>
+						<li>滚动内容 - 第3条</li>
+						<li>滚动内容 - 第4条</li>
+						<li>滚动内容 - 最后1条内容</li>
+					</ul>
+			</div>
+      </div>
       <div class="item item5">
         <div>
             <h2>Page5 - 更多动画</h2>
@@ -132,6 +144,16 @@ export default {
         }
         .displayNone {
             display: none;
+        }
+        .item4 ul li{
+            width: 100%;
+            padding: 100px 10px;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            border-bottom: 1px solid rgb(83, 83, 83);
+            background: rgba(255, 255, 255, .5);
+            text-align: center;
         }
         .opacityAnimation{
             animation: opacityAnimation .5s linear;
@@ -428,13 +450,14 @@ export default {
         }
 
         .item4 ul li{
-            width:100%;
-            padding:10px;
+            width: 100%;
+            padding: 100px 10px;
             -webkit-box-sizing: border-box;
             -moz-box-sizing: border-box;
             box-sizing: border-box;
-            border-bottom:1px solid #ccc;
-            background: rgba(255,255,255,.5);
+            border-bottom: 1px solid rgb(83, 83, 83);
+            background: rgba(255, 255, 255, .5);
+            text-align: center;
         }
 
 

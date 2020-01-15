@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "animation.css": "^0.1.0",
+    "fabric": "^3.6.0",
     "jquery": "^1.12.4",
     "node-sass": "^4.13.0",
     "vue": "^2.5.2",
