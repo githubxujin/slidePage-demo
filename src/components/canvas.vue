@@ -1,6 +1,9 @@
 <template>
   <div>
       <p>canvas实例</p>
+      <div class="tools">
+          <colorPicker v-model="strokeColor" @change="value => strokeColor = value"></colorPicker>
+      </div>
       <ul class="leftBtns">
           <li @click="changeType(btn.type)" v-for="(btn,i) in leftBtns" :key="i">{{btn.name}}</li>
       </ul>
@@ -18,10 +21,13 @@ export default {
     data() {
         return {
             btns: [{name:'正方形', fun: 'drawRect'},{name: '圆形', fun: 'drawCircle'},{name:'三角形',fun: 'drawTriangle'},{name:'不规则',fun: 'drawPath'}],
-            leftBtns: [{name: '铅笔', type: 'pencer'}, {name: '箭头', type: 'arrow'}, {name: '直线', type: 'line'}, {name: '虚线', type: 'dottedLine'}, {name: '圆形', type: 'circle'}, {name: '正方形', type: 'rect'}, {name: '三角形', type: 'triangle'}, {name: '垃圾桶', type: 'delete'}, {name: '文字', type: 'word'}, {name: '撤回', type: 'back'}],            
+            leftBtns: [{name: '铅笔', type: 'pencil'}, {name: '箭头', type: 'arrow'}, {name: '直线', type: 'line'}, {name: '虚线', type: 'dottedLine'}, {name: '圆形', type: 'circle'}, {name: '正方形', type: 'rect'}, {name: '三角形', type: 'triangle'}, {name: '垃圾桶', type: 'delete'}, {name: '文字', type: 'word'}, {name: '撤回', type: 'back'}],            
             canvasInt: null,
             mouseFrom: {x: 0, y: 0},
-            mouseTo: {x: 0, y: 0}
+            mouseTo: {x: 0, y: 0},
+            drawingObject: null,
+            strokeColor: '#333',
+            strokeWidths: 3
         }
     },
     mounted() {
@@ -41,12 +47,10 @@ export default {
             // 起点位置
             this.mouseFrom.x = options.pointer.x;
             this.mouseFrom.y = options.pointer.y;
-            console.log('options', options)
-            console.log('options', options.pointer.x, options.pointer.y)
         })
         // 鼠标移动
         this.canvasInt.on('mouse:move', options => {
-            console.log('options', options.pointer.x, options.pointer.y)
+            // console.log('options', options.pointer.x, options.pointer.y)
         })
         // 鼠标抬起
         this.canvasInt.on('mouse:up', options => {
@@ -72,9 +76,25 @@ export default {
         this.initCanvas()
     },
     methods: {
+        resetObj () {
+            // 关闭绘图
+            this.canvasInt.isDrawingMode = false;
+            this.canvasInt.selectable = false;
+            this.canvasInt.selection = false;
+            // ？
+            this.canvasInt.skipTargetFind = true;
+        },
         changeType(type) {
+            this.resetObj();
+            if(this.drawingObject) {
+                this.canvasInt.remove(this.drawimgObject)
+            }
+            let canvasObject = null;
             switch(type) {
-                case 'pencer':
+                case 'pencil':
+                    this.canvasInt.isDrawingMode = true;
+                    this.canvasInt.freeDrawigBrush.color = this.strokeColor
+                    this.canvasInt.freeDrawigBrush.width = this.strokeWidths // 画笔宽度
                     // 铅笔
                     break;
                 case 'circle':
@@ -85,6 +105,10 @@ export default {
                     break;
                 case 'line': 
                     // 直线
+                    canvasObject = new fabric.Line(
+                        [this.mouseFrom.x, this.mouseFrom.y, this.mouseTo.x , this.mouseTo.y],
+                        {stroke: this.strokeColor, strokeWidth: this.strokeWidths}
+                    )
                     break;
                 case 'dottedLine':
                     // 虚线
@@ -100,12 +124,19 @@ export default {
                     break;
                 case 'delete':
                     // 删除
+                    this.canvasInt.clear();
+                    this.canvasInt.renderAll();
                     break;
                 case 'back':
                     // 撤回
                     break;
                 default :
                     break;
+            }
+            if(canvasObject) {
+                this.canvasInt.add(canvasObject)
+                this.canvasInt.renderAll();
+                this.drawingObject = canvasObject;
             }
         },
         initCanvas() {
@@ -167,5 +198,8 @@ li,ul,ol{
 .topBtns li{
     flex: 1;
     display: inline-block;
+}
+.tools .box{
+    z-index: 10
 }
 </style>

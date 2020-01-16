@@ -8,10 +8,10 @@ Vue.config.productionTip = false
 require('@/util/jquery.fullPage.css')
 require('@/util/slidePage.css')
 require('@/util/page-animation.css')
-
+import vcolorpicker from 'vcolorpicker'
 let isPrd = process.env.NODE_ENV === 'production';
 // !isPrd && new vconsole()
-
+Vue.use(vcolorpicker)
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
