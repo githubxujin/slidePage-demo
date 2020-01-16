@@ -47,6 +47,7 @@ export default {
             // 起点位置
             this.mouseFrom.x = options.pointer.x;
             this.mouseFrom.y = options.pointer.y;
+            console.log('起点', this.mouseFrom.x, this.mouseFrom.y)
         })
         // 鼠标移动
         this.canvasInt.on('mouse:move', options => {
@@ -57,6 +58,7 @@ export default {
             // 终点位置
             this.mouseTo.x = options.pointer.x;
             this.mouseTo.y = options.pointer.y;
+            console.log('终点', this.mouseTo.x, this.mouseTo.y)
         })
         // 修改拖拽对象过程中透明度
         this.canvasInt.on('object:move', e => {
@@ -100,7 +102,17 @@ export default {
                 case 'circle':
                     // 圆形
                     break;
-                case 'arrow': 
+                case 'arrow':
+                    this.fillColor = this.isFill ? this.strokeInnerColor : '';
+                    canvasObject = new fabric.Path(
+                        this.drawArrow(this.mouseFrom.x, this.mouseFrom.y, this.mouseTo.x, this.mouseTo.y, 17.5, 17.5),
+                        {
+                            stroke: this.strokeColor,
+                            fill: this.fillColor,
+                            strokeWidth: this.strokeWidths
+                        }
+                    )
+                    if(this.isFill)
                     // 箭头
                     break;
                 case 'line': 
@@ -114,7 +126,16 @@ export default {
                     // 虚线
                     break;
                 case 'rect':
-                    // 正方形
+                    // 矩形
+                    this.fillColor = this.isFill ? this.strokeInnerColor : '';
+                    canvasObject = new fabric.Rect({
+                        left: this.mouseFrom.x,
+                        top: this.mouseFrom.y,
+                        width: this.mouseTo.x - this.mouseFrom.x,
+                        height: this.mouseTo.y - this.mouseFrom.x,
+                        stroke: this.strokeColor,
+                        fill: this.fillColor
+                    })
                     break;
                 case 'triangle': 
                     // 三角形
@@ -169,6 +190,31 @@ export default {
             let path = new fabric.Path('M 0 0 L 200 100 L 170 200 z');
             path.set({left: 120, top: 120, fill: 'orange'})
             this.canvasInt.add(path)
+        },
+        drawArrow(fromX, fromY, toX, toY, theta = 30, headlen = 10) {
+            theta = theta || 30;
+            headlen = headlen || 10
+            // 计算各角度和对应的P2，P3坐标
+            let angle = Math.atan2(fromY - toY, fromX - toX) * 180 / Math.PI,
+                angle1 = (angle + theta) * Math.PI / 180,
+                angle2 = (angle - theta) * Math.PI / 180,
+                topX = headlen * Math.cos(angle1),
+                topY = headlen * Math.sin(angle1),
+                botX = headlen * Math.cos(angle2),
+                botY = headlen * Math.sin(angle2)
+            let arrowX = fromX - topX,
+                arrowY = fromY - topY
+            let path = ' M' + fromX + ' ' + fromY;
+            path += ' L' + toX + ' ' + toY;
+            arrowX = toX + topX;
+            arrowY = toY + topY;
+            path += ' M' + arrowX + ' ' + arrowY;
+            path += ' L' + toX + ' ' + toY;
+            arrowX = toX + botX;
+            arrowY = toY + botY;
+            path += ' L' + arrowX + ' ' + arrowY;
+            console.log('path',path)
+            return path;
         }
     }
 }
