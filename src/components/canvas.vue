@@ -124,6 +124,14 @@ export default {
                     break;
                 case 'dottedLine':
                     // 虚线
+                    canvasObject = new fabric.Line(
+                        [this.mouseFrom.x, this.mouseFrom.y, this.mouseTo.x, this.mouseTo.y],
+                        {
+                            stroke: this.strokeColor,
+                            strokeWidth: this.strokeWidths,
+                            strokeDashArray: [3, 1] // 虚线参数
+                        }
+                    )
                     break;
                 case 'rect':
                     // 矩形
@@ -139,6 +147,7 @@ export default {
                     break;
                 case 'triangle': 
                     // 三角形
+                    canvasObject = new fabric.Triangle()
                     break;
                 case 'word':
                     // 文字
