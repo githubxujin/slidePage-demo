@@ -5,29 +5,39 @@
           <colorPicker v-model="strokeColor" @change="value => strokeColor = value"></colorPicker>
       </div>
       <ul class="leftBtns">
-          <li @click="changeType(btn.type)" v-for="(btn,i) in leftBtns" :key="i">{{btn.name}}</li>
+          <li @click="changeType(btn.type)" v-for="(btn,i) in leftBtns" :key="i">
+              <label for="upload">{{btn.name}}</label>
+              <input @change="uploadImg" id="upload" type="file" accept="image/*" v-if="btn.type === 'image'" style="display: none">
+          </li>
       </ul>
       <ul class="topBtns">
           <li @click="distribute(item.fun)" v-for="(item,i) in btns" :key="i">{{item.name}}</li>
       </ul>
+      <img src="../assets/zhoujielun.jpg" ref="image" alt="" style="display: none">
       <canvas ref="canvas"></canvas>
   </div>
 </template>
 
 <script>
        
-import {fabric} from 'fabric'
+import {fabric} from 'fabric';
+import zhuojielun from '../assets/zhoujielun.jpg';
+
+
+
 export default {
     data() {
         return {
             btns: [{name:'正方形', fun: 'drawRect'},{name: '圆形', fun: 'drawCircle'},{name:'三角形',fun: 'drawTriangle'},{name:'不规则',fun: 'drawPath'}],
-            leftBtns: [{name: '铅笔', type: 'pencil'}, {name: '箭头', type: 'arrow'}, {name: '直线', type: 'line'}, {name: '虚线', type: 'dottedLine'}, {name: '圆形', type: 'circle'}, {name: '正方形', type: 'rect'}, {name: '三角形', type: 'triangle'}, {name: '垃圾桶', type: 'delete'}, {name: '文字', type: 'word'}, {name: '撤回', type: 'back'}],            
+            leftBtns: [{name: '铅笔', type: 'pencil'}, {name: '箭头', type: 'arrow'}, {name: '直线', type: 'line'}, {name: '虚线', type: 'dottedLine'}, {name: '圆形', type: 'circle'}, {name: '正方形', type: 'rect'}, {name: '三角形', type: 'triangle'}, {name: '垃圾桶', type: 'delete'}, {name: '文字', type: 'word'}, {name: '撤回', type: 'back'},{name: '图片',type:'image'},{name: '编辑', type: 'edit'}],            
             canvasInt: null,
             mouseFrom: {x: 0, y: 0},
             mouseTo: {x: 0, y: 0},
             drawingObject: null,
             strokeColor: '#333',
-            strokeWidths: 3
+            strokeWidths: 3,
+            type: 'pencil',
+            canDrawing: false
         }
     },
     mounted() {
@@ -45,28 +55,37 @@ export default {
         // 鼠标点击
         this.canvasInt.on('mouse:down', options => {
             // 起点位置
-            this.mouseFrom.x = options.pointer.x;
-            this.mouseFrom.y = options.pointer.y;
+            this.mouseFrom.x = parseInt(options.pointer.x) ;
+            this.mouseFrom.y = parseInt(options.pointer.y);
+            this.canDrawing = true;
             console.log('起点', this.mouseFrom.x, this.mouseFrom.y)
         })
         // 鼠标移动
         this.canvasInt.on('mouse:move', options => {
             // console.log('options', options.pointer.x, options.pointer.y)
+            if(!this.canDrawing) return ;
+            this.mouseTo.x = parseInt(options.pointer.x);
+            this.mouseTo.y = parseInt(options.pointer.y);
+            this.drawing();
         })
         // 鼠标抬起
         this.canvasInt.on('mouse:up', options => {
             // 终点位置
-            this.mouseTo.x = options.pointer.x;
-            this.mouseTo.y = options.pointer.y;
+            this.mouseTo.x = parseInt(options.pointer.x);
+            this.mouseTo.y = parseInt(options.pointer.y);
             console.log('终点', this.mouseTo.x, this.mouseTo.y)
+            this.drawing();
+            this.canDrawing = false;
         })
         // 修改拖拽对象过程中透明度
         this.canvasInt.on('object:move', e => {
             e.target.opacity = 0.5
+            this.changeType()
         })
 
         this.canvasInt.on('object:modified', e => {
-            e.target.opacity = 1
+            e.target.opacity = 1;
+            this.drawing()
         })
 
         this.canvasInt.on('object:added', e => {
@@ -87,16 +106,19 @@ export default {
             this.canvasInt.skipTargetFind = true;
         },
         changeType(type) {
+            this.type = type;
+        },
+        drawing() {
             this.resetObj();
             if(this.drawingObject) {
                 this.canvasInt.remove(this.drawimgObject)
             }
             let canvasObject = null;
-            switch(type) {
+            switch(this.type) {
                 case 'pencil':
                     this.canvasInt.isDrawingMode = true;
-                    this.canvasInt.freeDrawigBrush.color = this.strokeColor
-                    this.canvasInt.freeDrawigBrush.width = this.strokeWidths // 画笔宽度
+                    // this.canvasInt.freeDrawigBrush.color = this.strokeColor
+                    // this.canvasInt.freeDrawigBrush.width = this.strokeWidths // 画笔宽度
                     // 铅笔
                     break;
                 case 'circle':
@@ -160,6 +182,22 @@ export default {
                 case 'back':
                     // 撤回
                     break;
+                case 'image':
+                    // 图片
+                    let imgInt = new fabric.Image(this.$refs.image, {
+                        left: 100,
+                        top: 100,
+                        opacity: 0.85
+                    })
+                    imgInt.hasControls = true;
+                    this.canvasInt.add(imgInt)
+                    break;
+                case 'edit':
+                    // 编辑
+                    this.canvasInt.isDrawingMode = true;
+                    this.canvasInt.selectable = true;
+                    this.canvasInt.selection = true;
+                    break;
                 default :
                     break;
             }
@@ -168,6 +206,11 @@ export default {
                 this.canvasInt.renderAll();
                 this.drawingObject = canvasObject;
             }
+        },
+        uploadImg(e) {
+            // 上传图片
+            console.log(e)
+            let file = e.target.files;
         },
         initCanvas() {
             let width = window.innerWidth;
@@ -212,7 +255,7 @@ export default {
                 botX = headlen * Math.cos(angle2),
                 botY = headlen * Math.sin(angle2)
             let arrowX = fromX - topX,
-                arrowY = fromY - topY
+                arrowY = fromY - topY;
             let path = ' M' + fromX + ' ' + fromY;
             path += ' L' + toX + ' ' + toY;
             arrowX = toX + topX;
@@ -254,7 +297,9 @@ li,ul,ol{
     flex: 1;
     display: inline-block;
 }
-.tools .box{
-    z-index: 10
+/deep/ .m-colorPicker {
+    .box{
+        z-index: 10
+    }
 }
 </style>
