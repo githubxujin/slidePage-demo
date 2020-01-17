@@ -7,7 +7,7 @@
       <ul class="leftBtns">
           <li @click="changeType(btn.type)" v-for="(btn,i) in leftBtns" :key="i">
               <label for="upload">{{btn.name}}</label>
-              <input @change="uploadImg" id="upload" type="file" accept="image/*" v-if="type === 'image'" style="display: none">
+              <input @change="uploadImg" id="upload" type="file" accept="image/*" v-if="btn.type === 'image' && type === 'image'" style="display: none">
           </li>
       </ul>
       <ul class="topBtns">
