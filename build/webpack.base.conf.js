@@ -56,6 +56,12 @@ module.exports = {
         })
       },
       {
+        test: /\.less$/,
+        use: ExtractTextWebpackPlugin.extract({
+          use:['css-loader','less-loader']
+        })
+      },
+      {
         test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
         loader: 'url-loader',
         options: {
